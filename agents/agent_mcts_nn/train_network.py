@@ -7,9 +7,9 @@ from game_utils import BOARD_SHAPE
 from .generate_data import MCTS_for_data_generation
 from .network import Connect4Model
 
-epochs = 5
+epochs = 20
 batch_size = 128
-num_episodes = 10
+num_episodes = 100
 
 def generate_self_play_data(num_episodes):
     data = []
