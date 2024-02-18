@@ -102,7 +102,7 @@ def train_network():
     """
     self_play_data = generate_self_play_data(num_episodes)
     model = Connect4Model(BOARD_SHAPE, 7)
-    model, pi_losses, v_losses  = train(model, self_play_data[:200])
+    model, pi_losses, v_losses  = train(model, self_play_data)
 
     # Save data
     torch.save(model.state_dict(), 'data/model_weights.pth')

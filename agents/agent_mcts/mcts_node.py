@@ -54,7 +54,7 @@ class MonteCarloTreeSearchNode:
         self.num_visits += 1
         self.num_wins += score
 
-    def calculate_ucb_score(self, child: MonteCarloTreeSearchNode) -> float:
+    def calculate_ucb_score(self, child) -> float:
         """
         Calculates the ucb score based on the node and given child
         """

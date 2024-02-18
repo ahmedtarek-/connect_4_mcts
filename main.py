@@ -1,7 +1,6 @@
 from typing import Callable
 from game_utils import GenMove
 from agents.agent_human_user import user_move as human_user_move
-# from agents.agent_minimax import generate_move_minmax as minmax_user_move
 from agents.agent_mcts_nn import generate_move_mcts_nn as mcts_nn_user_move
 from agents.agent_mcts import generate_move_mcts as mcts_user_move
 

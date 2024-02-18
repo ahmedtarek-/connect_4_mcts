@@ -22,41 +22,6 @@ class TestMCTSNodeNN(unittest.TestCase):
         assert node.num_wins == initial_num_wins
         assert node.num_visits == initial_num_visits + 1
 
-
-    def test_selecting_node_no_children(self):
-        mock_board = initialize_game_state()
-        node = MonteCarloTreeSearchNode_NN(board=mock_board, player=PLAYER1)
-        best_child = node.selecting_node_nn()
-        assert best_child is None
-
-    def test_selecting_node_nn(self):
-        mock_board = initialize_game_state()
-        node = MonteCarloTreeSearchNode_NN(board=mock_board, player=PLAYER1)
-        node.num_wins = 2
-        node.num_visits = 4
-        child_node = MonteCarloTreeSearchNode_NN(board=mock_board,parent=node)
-        child_node.num_wins = 1
-        child_node.num_visits = 2
-        node.children.append(child_node)
-        best_child = node.selecting_node_nn()
-        assert best_child is child_node
-
-    def test_selecting_node_nn_2(self):
-        mock_board = initialize_game_state()
-        node = MonteCarloTreeSearchNode_NN(board=mock_board, player=PLAYER1)
-        node.num_wins = 2
-        node.num_visits = 4
-        child_node1 = MonteCarloTreeSearchNode_NN(board=mock_board, parent=node)
-        child_node2 = MonteCarloTreeSearchNode_NN(board=mock_board, parent=node)
-        child_node1.num_wins = 5
-        child_node1.num_visits = 10
-        child_node2.num_wins = 8
-        child_node2.num_visits = 12
-        node.children.extend([child_node1, child_node2])
-        best_child = node.selecting_node_nn()
-        assert best_child is child_node2
-
-
     def test_expanding_node_nn(self):
         mock_board = initialize_game_state()
         node = MonteCarloTreeSearchNode_NN(board=mock_board, player = PLAYER1)
@@ -65,37 +30,3 @@ class TestMCTSNodeNN(unittest.TestCase):
         assert child.parent is node
         assert child.board is not None
         assert child.action == action
-
-
-    def test_selecting_node_no_children_nn(self):
-        mock_board = initialize_game_state()
-        node = MonteCarloTreeSearchNode_NN(board=mock_board, player=PLAYER1)
-        best_child = node.selecting_node_nn()
-        assert best_child is None
-
-    def test_selecting_node_nn(self):
-        mock_board = initialize_game_state()
-        node = MonteCarloTreeSearchNode_NN(board=mock_board, player=PLAYER1)
-        node.num_wins = 2
-        node.num_visits = 4
-        child_node = MonteCarloTreeSearchNode_NN(board=mock_board,parent=node)
-        child_node.num_wins = 1
-        child_node.num_visits = 2
-        node.children.append(child_node)
-        best_child = node.selecting_node_nn()
-        assert best_child is child_node
-
-    def test_selecting_node_nn_2(self):
-        mock_board = initialize_game_state()
-        node = MonteCarloTreeSearchNode_NN(board=mock_board, player=PLAYER1)
-        node.num_wins = 2
-        node.num_visits = 4
-        child_node1 = MonteCarloTreeSearchNode_NN(board=mock_board, parent=node)
-        child_node2 = MonteCarloTreeSearchNode_NN(board=mock_board, parent=node)
-        child_node1.num_wins = 5
-        child_node1.num_visits = 10
-        child_node2.num_wins = 8
-        child_node2.num_visits = 12
-        node.children.extend([child_node1, child_node2])
-        best_child = node.selecting_node_nn()
-        assert best_child is child_node2

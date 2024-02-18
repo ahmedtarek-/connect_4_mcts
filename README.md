@@ -78,5 +78,4 @@ python main.py
 
 5. To change playing mode, change line 10 in `main.py`
     - human_user_move  -> For two players
-    - random_user_move -> For random moves
     - minmax_user_move -> For playing against computer
