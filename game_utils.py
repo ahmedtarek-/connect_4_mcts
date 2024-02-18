@@ -331,3 +331,7 @@ def get_opponent(player: BoardPiece) -> BoardPiece:
     """
 
     return PLAYER1 if player == PLAYER2 else PLAYER2
+
+def get_current_player(board):
+    num_moves = np.sum(board != NO_PLAYER)
+    return PLAYER1 if num_moves % 2 == 0 else PLAYER2

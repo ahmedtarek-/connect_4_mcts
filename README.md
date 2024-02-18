@@ -5,17 +5,22 @@ https://github.com/ahmedtarek-/connect_4_mcts
 
 1. Install requirements.txt using pip or your favorite package manager (we used conda)
 
-2. Run the network trainer
+2. Run tests
+```bash
+python run_tests.py
+```
+
+3. Run the network trainer
 ```bash
 python train_mcts_network.py
 ```
 
-3. Run the main
+4. Run the main
 ```bash
 python main.py
 ```
 
-4. To change playing mode, change line 10 in `main.py`
+5. To change playing mode, change line 10 in `main.py`
     - human_user_move  -> For two players
     - random_user_move -> For random moves
     - minmax_user_move -> For playing against computer
