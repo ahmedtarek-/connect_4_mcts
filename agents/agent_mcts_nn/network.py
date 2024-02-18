@@ -5,9 +5,16 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class Connect4Model(nn.Module):
+    """
+    A class that represents the neural network of the connect 4 model
+        - It contains a convolution layer
+        - It contains a residual block (for diminishing gradient problem)
+        - It contains two heads:
+            - Action head
+            - Value head
+    """
 
     def __init__(self, board_size, action_size):
-
         super(Connect4Model, self).__init__()
 
         self.size = board_size
@@ -22,7 +29,6 @@ class Connect4Model(nn.Module):
         self.res_blocks = nn.ModuleList(
             [ResidualBlock(n_filters) for _ in range(n_res_blocks)]
         )
-
 
         self.action_head = nn.Sequential(
             nn.Conv2d(n_filters, n_filters//4, kernel_size=3, padding=1),
@@ -41,6 +47,9 @@ class Connect4Model(nn.Module):
         )
 
     def forward(self, x):
+        """
+        A typical forward method for a neural network
+        """
         x = F.relu(self.conv(x))
 
         for block in self.res_blocks:
@@ -48,11 +57,13 @@ class Connect4Model(nn.Module):
         action_logits = self.action_head(x)
         value_logit = self.value_head(x)
         value = torch.tanh(value_logit)
-        # print(value)
 
         return F.softmax(action_logits, dim=1), value
 
     def predict(self, board):
+        """
+        A prediction method
+        """
         board = torch.FloatTensor(board.astype(np.float32)).to(self.device)
         board = board.view(1, self.size)
         self.eval()
@@ -62,6 +73,11 @@ class Connect4Model(nn.Module):
         return pi.data.cpu().numpy()[0], v.data.cpu().numpy()[0]
 
 class ResidualBlock(nn.Module):
+    """
+    A class that represents a residual block to be used in the Connect4Model
+    it inherits from nn.Module
+    """
+
     def __init__(self, n_filters):
         super().__init__()
         self.conv_1 = nn.Conv2d(n_filters, n_filters, kernel_size=3, padding=1)

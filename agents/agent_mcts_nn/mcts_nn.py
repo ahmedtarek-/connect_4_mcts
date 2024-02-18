@@ -7,10 +7,17 @@ from game_utils import PLAYER1, PLAYER2
 from typing import Tuple, Optional, Callable
 
 
-def toggle_player(current_player):
+def toggle_player(current_player: BoardPiece) -> BoardPiece:
+    """
+    Returns the other player
+    """
     return PLAYER2 if current_player == PLAYER1 else PLAYER1
 
 def select_node_nn(node: MonteCarloTreeSearchNode_NN) -> MonteCarloTreeSearchNode_NN:
+    """
+    Selects a node by invoking the selecting_node() method of
+    MonteCarloTreeSearchNode
+    """
     value = 0
     while not np.any(node.available_actions) and node.children != []:
         next_node, next_value = node.selecting_node_nn()
@@ -22,6 +29,10 @@ def select_node_nn(node: MonteCarloTreeSearchNode_NN) -> MonteCarloTreeSearchNod
 
 
 def explore_node_nn(node: MonteCarloTreeSearchNode_NN) -> MonteCarloTreeSearchNode_NN:
+    """
+    Explores a node by invoking the expanding_node() method of
+    MonteCarloTreeSearchNode
+    """
     if np.any(node.available_actions):
         action = np.random.choice(node.available_actions)
         node = node.expanding_node(action)
@@ -29,6 +40,10 @@ def explore_node_nn(node: MonteCarloTreeSearchNode_NN) -> MonteCarloTreeSearchNo
 
 
 def simulate_game_nn(node: MonteCarloTreeSearchNode_NN) -> tuple:
+    """
+    Simulates a game by invoking the simulate_game() method of
+    MonteCarloTreeSearchNode
+    """
     board = node.board.copy()
     win = False
     current_player = node.player
@@ -44,11 +59,18 @@ def simulate_game_nn(node: MonteCarloTreeSearchNode_NN) -> tuple:
     return win, current_player
 
 def backpropagation_nn(node:MonteCarloTreeSearchNode_NN, nn_output_value):
+    """
+    Runs the back propagation of a mcts tree by invoking the count_visit_win() method of
+    MonteCarloTreeSearchNode
+    """
     while node is not None:
         node.count_visit_win(nn_output_value)
         node = node.parent
 
 def find_best_move(root):
+    """
+    Finds the best move given a root node
+    """
     best_move = -1
     max_score = -np.inf
     for child in root.children:
@@ -61,6 +83,10 @@ def find_best_move(root):
     return best_move
 
 def MCTS_nn(board: np.ndarray, player: BoardPiece) -> PlayerAction:
+    """
+    Runs the mcts alogrithm by selecting a node, exploring it, simulating a game
+    and running back_propagation to update values.
+    """
     root = MonteCarloTreeSearchNode_NN(board=board, player=player)
     end_time = time.time() + GLOBAL_TIME #examplary usage for 5 seconds run
 
@@ -74,6 +100,9 @@ def MCTS_nn(board: np.ndarray, player: BoardPiece) -> PlayerAction:
     return find_best_move(root)
 
 def generate_move_mcts_nn(board: np.ndarray, player: BoardPiece, saved_state: Optional[SavedState]) -> object:
+    """
+    Generates an action based on the mcts algorithm.
+    """
     global PLAYER
     global OPPONENT
 

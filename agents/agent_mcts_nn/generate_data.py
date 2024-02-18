@@ -10,31 +10,43 @@ from game_utils import PLAYER1, PLAYER2
 
 NUM_MCTS_SIMULATIONS = 100
 
-def MCTS_for_data_generation():
-  train_examples = []
-  current_player = PLAYER1
-  state = initialize_game_state()
+def MCTS_for_data_generation() -> list:
+    """
+    A method that runs and simulates a number of games and return
+    the boards based on these games to be used later in training.
 
-  while True:
-      root = MonteCarloTreeSearchNode(board=state.copy(), player=current_player)
-      simulate_mcts_search(root)
-      action_probs = calculate_action_probabilities(root)
-      train_examples.append((state.copy(), current_player, action_probs))
-      action = select_action(action_probs, state)
-      state = apply_player_action(state, action, current_player)
-      game_result = check_end_state(state, current_player)
+    Returns a list of board each containing
+        - board encoding
+        - action probabilities
+        - reward
+    """
+    train_examples = []
+    current_player = PLAYER1
+    state = initialize_game_state()
 
-      if game_result != GameState.STILL_PLAYING:
+    while True:
+        root = MonteCarloTreeSearchNode(board=state.copy(), player=current_player)
+        simulate_mcts_search(root)
+        action_probs = calculate_action_probabilities(root)
+        train_examples.append((state.copy(), current_player, action_probs))
+        action = select_action(action_probs, state)
+        state = apply_player_action(state, action, current_player)
+        game_result = check_end_state(state, current_player)
+
+        if game_result != GameState.STILL_PLAYING:
           boards = []
           for history_state, history_current_player, history_action_probs in train_examples:
               encoded_board = encode_state(history_state.copy(),history_current_player)
               reward = 1 if game_result == GameState.IS_WIN and history_current_player == current_player else -1
               boards.append((encoded_board, history_action_probs, reward))
           return boards
-      else:
+        else:
           current_player = get_opponent(current_player)
 
-def simulate_mcts_search(root):
+def simulate_mcts_search(root: MonteCarloTreeSearchNode) -> None:
+    """
+    Loops over the number of simulations and execute the mcts algorithm
+    """
     for _ in range(NUM_MCTS_SIMULATIONS):
         node = root
         node = select_node(node)
@@ -42,7 +54,10 @@ def simulate_mcts_search(root):
         win, simulated_player = simulate_game(node)
         back_propagation(node, win, simulated_player)
 
-def calculate_action_probabilities(root):
+def calculate_action_probabilities(root: MonteCarloTreeSearchNode) -> np.ndarray:
+    """
+    Calculates the action probabilities of a given node
+    """
     action_probs = np.zeros(BOARD_COLS)
     for child in root.children:
         action_probs[child.action] = child.num_visits
@@ -53,7 +68,10 @@ def calculate_action_probabilities(root):
         action_probs = np.ones(BOARD_COLS) / BOARD_COLS
     return action_probs
 
-def select_action(action_probs, d_board):
+def select_action(action_probs: np.ndarray, d_board: np.ndarray) -> int:
+    """
+    Calculates the action probabilities of a given node
+    """
     free_columns = get_free_columns(d_board)
     if not free_columns:
         return None

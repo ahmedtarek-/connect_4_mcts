@@ -27,6 +27,9 @@ PlayerAction = np.int8  # The column to be played
 GLOBAL_TIME = 5
 
 class GameState(Enum):
+    """
+    An enum representing whether a game is won, draw or still going.
+    """
     IS_WIN = 1
     IS_DRAW = -1
     STILL_PLAYING = 0
@@ -51,6 +54,21 @@ class MoveStatus(Enum):
 
 
 def pretty_print_board(board: np.ndarray) -> str:
+    """
+    Should return `board` converted to a human readable string representation,
+    to be used when playing or printing diagnostics to the console (stdout). The piece in
+    board[0, 0] of the array should appear in the lower-left in the printed string representation. Here's an example output, note that we use
+    PLAYER1_Print to represent PLAYER1 and PLAYER2_Print to represent PLAYER2):
+    |==============|
+    |              |
+    |              |
+    |    X X       |
+    |    O X X     |
+    |  O X O O     |
+    |  O O X X     |
+    |==============|
+    |0 1 2 3 4 5 6 |
+    """
     board_strings = []
 
     # Add a separator line at the beginning
@@ -75,8 +93,6 @@ def pretty_print_board(board: np.ndarray) -> str:
     board_strings.append(column_numbers)
 
     return '\n'.join(board_strings)
-
-
 
 
 def string_to_board(pp_board: str) -> np.ndarray:
@@ -136,6 +152,9 @@ def apply_player_action(board: np.ndarray, action: PlayerAction, player: BoardPi
 
 
 def check_horizontal(board: np.ndarray, player: BoardPiece) -> bool:
+    """
+    Checks if a win happened in the horizontal dimension
+    """
     for row in range(BOARD_ROWS):
         for col in range(BOARD_COLS - 3):  # Check all columns
             if all(board[row, col + i] == player for i in range(4)):
@@ -144,6 +163,9 @@ def check_horizontal(board: np.ndarray, player: BoardPiece) -> bool:
 
 
 def check_vertical(board: np.ndarray, player: BoardPiece) -> bool:
+    """
+    Checks if a win happened in the vertical dimension
+    """
     for col in range(BOARD_COLS):
         for row in range(BOARD_ROWS - 3):
             if all(board[row + i, col] == player for i in range(4)):
@@ -151,6 +173,9 @@ def check_vertical(board: np.ndarray, player: BoardPiece) -> bool:
     return False
 
 def check_diagonal_bottom_left_top_right(board: np.ndarray, player: BoardPiece) -> bool:
+    """
+    Checks if a win happened in a diagonal
+    """
     for row in range(3, BOARD_ROWS):
         for col in range(BOARD_COLS - 3):
             if all(board[row - i, col + i] == player for i in range(4)):
@@ -158,6 +183,9 @@ def check_diagonal_bottom_left_top_right(board: np.ndarray, player: BoardPiece) 
     return False
 
 def check_diagonal_top_left_bottom_right(board: np.ndarray, player: BoardPiece) -> bool:
+    """
+    Checks if a win happened in a diagonal
+    """
     for row in range(BOARD_ROWS - 3):
         for col in range(BOARD_COLS - 3):
             if all(board[row + i, col + i] == player for i in range(4)):
@@ -191,11 +219,8 @@ def check_end_state(board: np.ndarray, player: BoardPiece) -> GameState:
 
     return GameState.STILL_PLAYING
 
-
-
 class SavedState:
     pass
-
 
 GenMove = Callable[
     [np.ndarray, BoardPiece, Optional[SavedState]],  # Arguments for the generate_move function
@@ -205,6 +230,9 @@ GenMove = Callable[
 def user_move(board: np.ndarray,
               _player: BoardPiece,
               saved_state: Optional[SavedState]) -> tuple[PlayerAction, SavedState]:
+    """
+    Handles when a user makes a move
+    """
     is_valid_move = False
     while not is_valid_move:
         input_move_string = query_user(input)
@@ -220,12 +248,17 @@ def user_move(board: np.ndarray,
     return input_move_integer, saved_state
 
 
-def query_user(prompt_function: Callable):
+def query_user(prompt_function: Callable) -> str:
+    """
+    Prompt user for input
+    """
     usr_input = prompt_function("Column? ")
     return usr_input
 
-
-def handle_illegal_moves(board: np.ndarray, column: PlayerAction):
+def handle_illegal_moves(board: np.ndarray, column: PlayerAction) -> bool:
+    """
+    Handles a user input that doesn't make sense
+    """
     try:
         column = PlayerAction(column)
     except:
@@ -252,6 +285,11 @@ def human_vs_agent(
     init_1: Callable = lambda board, player: None,
     init_2: Callable = lambda board, player: None,
 ):
+    """
+    Simulates the game between two agents, usually 
+    between a human agent (prompt) and a smart agent
+    (minimax or mcts)
+    """
     import time
 
     players = (PLAYER1, PLAYER2)
@@ -293,7 +331,13 @@ def human_vs_agent(
                     break
                 print("\n")
 
-def encode_state(state, current_player):
+def encode_state(state, current_player: BoardPiece) -> np.ndarray:
+    """
+    Encodes the state of the board to three arrays:
+        - One representing the current player
+        - One representing the opposite player
+        - One representing the empty space
+    """
     other_player = get_opponent(current_player)
     encoded_state = np.stack((state == 0, state == current_player, state == other_player)).astype(np.float32)
     if len(state.shape) == 3:
@@ -332,6 +376,6 @@ def get_opponent(player: BoardPiece) -> BoardPiece:
 
     return PLAYER1 if player == PLAYER2 else PLAYER2
 
-def get_current_player(board):
+def get_current_player(board: np.ndarray) -> BoardPiece:
     num_moves = np.sum(board != NO_PLAYER)
     return PLAYER1 if num_moves % 2 == 0 else PLAYER2

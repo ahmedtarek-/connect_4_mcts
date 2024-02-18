@@ -10,6 +10,10 @@ from game_utils import get_free_columns, check_end_state, apply_player_action
 from game_utils import PLAYER1, PLAYER2, BOARD_SHAPE, BOARD_COLS
 
 class MonteCarloTreeSearchNode_NN:
+    """
+    A class that represents a node of a monte carlo tree search algorithm
+    a node typically has a parent and children
+    """
 
     def __init__(self, action=None, parent=None, board=None, player=None):
         self.action = action
@@ -24,15 +28,26 @@ class MonteCarloTreeSearchNode_NN:
         self.model.load_state_dict(torch.load('data/model_weights.pth'))
 
     def get_available_actions(self) -> np.ndarray:
+        """
+        Returns an array of available actions
+        """
         if check_end_state(self.board, self.player) == GameState.IS_WIN:
           return np.array([])
         return np.array(get_free_columns(self.board))
 
     def count_visit_win(self, score: int):
+        """
+        Increments the number of visits and number of wins for the current node
+        """
         self.num_visits += 1
         self.num_wins += score
 
     def selecting_node_nn(self):
+        """
+        Calculates the best child to use it later in expanding,
+        in this version it does this by running a neural network to decide the
+        values of the children nodes
+        """
         state_tensor = torch.tensor(encode_state(self.board.copy(), self.player), dtype=torch.float)
         out_pi, out_v = self.model(state_tensor.unsqueeze(0))
         action_probs = F.softmax(out_pi.view(BOARD_COLS), dim=0).detach().numpy()
@@ -47,6 +62,9 @@ class MonteCarloTreeSearchNode_NN:
           return None, None
 
     def expanding_node(self, action: PlayerAction):
+        """
+        Expands the node by applying the player action and creating a new child
+        """
         opponent = PLAYER2 if self.player == PLAYER1 else PLAYER1
         new_board = apply_player_action(self.board.copy(), action, opponent)
         child = MonteCarloTreeSearchNode_NN(action=action, parent=self, board=new_board, player=opponent)
