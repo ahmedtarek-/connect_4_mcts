@@ -8,6 +8,25 @@ class MonteCarloTreeSearchNode:
     """
     A class that represents a node of a monte carlo tree search algorithm
     a node typically has a parent and children
+
+    Attributes
+    ----------
+        - action: The action taken to reach this node.
+        - parent: The parent node of this node.
+        - board: The game board state associated with this node.
+        - player: The player associated with this node.
+        - children: List of child nodes.
+        - num_wins: Number of wins during simulation.
+        - num_visits: Number of visits during simulation.
+        - available_actions: Array of available actions for the current node.
+        - model: Connect4Model representing the neural network model for predictions.
+
+    Methods
+    -------
+        - get_available_actions(self): Returns an array of available actions.
+        - count_visit_win(self, score): Increments the number of visits and number of wins for the current node.
+        - selecting_node_nn(self): Calculates the best child based on the neural network predictions.
+        - expanding_node(self, action): Expands the node by applying the player action and creating a new child.
     """
 
     def __init__(self, action=None, parent=None, board=None, player=None):

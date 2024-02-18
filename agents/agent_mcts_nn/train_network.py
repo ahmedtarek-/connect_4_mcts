@@ -32,6 +32,14 @@ def train(model: Connect4Model, examples: list) -> tuple[Connect4Model, list, li
             4. Run the model and compare with samples (loss function)
             5. Backprop and step in optimizer
             6. Append losses to track them later
+
+    Parameters:
+    - model (Connect4Model): The Connect4Model to be trained.
+    - examples (list): A list of training examples.
+
+    Returns:
+    tuple[Connect4Model, list, list]: A tuple containing the trained model,
+    a list of inputs, and a list of corresponding outputs.
     """
 
     optimizer = optim.Adam(model.parameters(), lr=5e-4)

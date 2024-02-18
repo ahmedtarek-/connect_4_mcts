@@ -28,7 +28,13 @@ GLOBAL_TIME = 5
 
 class GameState(Enum):
     """
-    An enum representing whether a game is won, draw or still going.
+    An enum representing whether a game is won, draw, or still going.
+
+    Enum Values
+    -----------
+        - IS_WIN: Represents the game state where a player has won.
+        - IS_DRAW: Represents the game state where the game is a draw.
+        - STILL_PLAYING: Represents the game state where the game is still in progress.
     """
     IS_WIN = 1
     IS_DRAW = -1
@@ -44,6 +50,15 @@ def initialize_game_state() -> np.ndarray:
 class MoveStatus(Enum):
     """
     An enum to represent possible different cases for user input.
+
+    Enum Values
+    -----------
+        - IS_VALID: Represents a valid move.
+        - WRONG_TYPE: Represents an invalid move due to input not being a number.
+        - NOT_INTEGER: Represents an invalid move due to input not being an integer
+          or not equal to an integer in value.
+        - OUT_OF_BOUNDS: Represents an invalid move due to input being out of bounds.
+        - FULL_COLUMN: Represents an invalid move due to the selected column being full.
     """
     IS_VALID = 1
     WRONG_TYPE = 'Input is not a number.'

@@ -12,6 +12,20 @@ class Connect4Model(nn.Module):
         - It contains two heads:
             - Action head
             - Value head
+
+    Attributes
+    ----------
+        - size (tuple): The size of the Connect 4 board represented as (rows, columns).
+        - action_size (int): The number of possible actions in the Connect 4 game.
+        - conv (nn.Sequential): Convolutional layer to process input features.
+        - res_blocks (nn.ModuleList): List of residual blocks for addressing the vanishing gradient problem.
+        - action_head (nn.Sequential): Head for predicting action probabilities.
+        - value_head (nn.Sequential): Head for predicting the value of a given board state.
+    
+    Methods
+    -------
+        - forward(self, x): Performs a forward pass through the neural network.
+        - predict(self, board): Makes predictions (action probabilities and value) for a given board state.
     """
 
     def __init__(self, board_size, action_size):
@@ -48,7 +62,15 @@ class Connect4Model(nn.Module):
 
     def forward(self, x):
         """
-        A typical forward method for a neural network
+        Performs a forward pass through the neural network.
+
+        Parameters
+        ----------
+            - x (torch.Tensor): Input tensor representing the Connect 4 board state.
+
+        Returns
+        -------
+            - tuple: A tuple containing action probabilities and the predicted value.
         """
         x = F.relu(self.conv(x))
 
@@ -76,6 +98,18 @@ class ResidualBlock(nn.Module):
     """
     A class that represents a residual block to be used in the Connect4Model
     it inherits from nn.Module
+
+    Attributes
+    ----------
+        - conv_1 (nn.Conv2d): First convolutional layer in the residual block.
+        - batch_norm_1 (nn.BatchNorm2d): Batch normalization layer after the first convolution.
+        - conv_2 (nn.Conv2d): Second convolutional layer in the residual block.
+        - batch_norm_2 (nn.BatchNorm2d): Batch normalization layer after the second convolution.
+        - relu (nn.ReLU): Rectified Linear Unit activation function.
+
+    Methods
+    -------
+        - forward(self, x): Performs a forward pass through the residual block.
     """
 
     def __init__(self, n_filters):
@@ -87,6 +121,17 @@ class ResidualBlock(nn.Module):
         self.relu = nn.ReLU()
 
     def forward(self, x):
+        """
+        Performs a forward pass through the residual block.
+
+        Parameters
+        ----------
+            - x (torch.Tensor): Input tensor to the residual block.
+
+        Returns
+        -------
+            - torch.Tensor: Output tensor after the forward pass through the residual block.
+        """
         output = self.relu(self.batch_norm_1(self.conv_1(x)))
         output = self.batch_norm_2(self.conv_2(output))
         return self.relu(output + x)
